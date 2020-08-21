@@ -1,27 +1,60 @@
 specVersion: 0.0.2
-description: Gravatar for Ethereum
-repository: https://github.com/graphprotocol/example-subgraph
+description: XOpts
+repository: https://github.com/interlay/xopts-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Gravity
+    name: OptionPairFactory
     network: mainnet
     source:
-      address: '0x2E645469f354BB4F5c8a05B3b30A929361cf77eC'
-      abi: Gravity
+      address: '0xb002b81476Df40bfFccD24514515078A17646307'
+      abi: OptionPairFactory
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
-      entities:
-        - Gravatar
-      abis:
-        - name: Gravity
-          file: ./abis/Gravity.json
-      eventHandlers:
-        - event: NewGravatar(uint256,address,string,string)
-          handler: handleNewGravatar
-        - event: UpdatedGravatar(uint256,address,string,string)
-          handler: handleUpdatedGravatar
       file: ./src/mapping.ts
+      entities:
+        - OptionPair
+      abis:
+        - name: OptionPairFactory
+          file: ./abis/OptionPairFactory.json
+      eventHandlers:
+        - event: CreatePair(bytes32,address,address,address,uint256,uint256,uint256)
+          handler: handleNewPair
+templates:
+  - kind: ethereum/contract
+    name: Option
+    network: mainnet
+    source:
+      abi: Option
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - OptionPair
+      abis:
+        - name: Option
+          file: ./abis/Option.json
+  - kind: ethereum/contract
+    name: Obligation
+    network: mainnet
+    source:
+      abi: Obligation
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - OptionPair
+        - Writer
+      abis:
+        - name: Obligation
+          file: ./abis/Obligation.json
+      eventHandlers:
+        - event: ExecuteExercise(indexed address,indexed address,uint256,uint256)
+          handler: handleExercise

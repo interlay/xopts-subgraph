@@ -1,6 +1,28 @@
-type Gravatar @entity {
+type OptionPairFactory @entity {
   id: ID!
-  owner: Bytes!
-  displayName: String!
-  imageUrl: String!
+  pairCount: Int!
+  totalSatoshis: BigInt!
+}
+
+type OptionPair @entity {
+  id: ID!
+  option: Bytes!
+  obligation: Bytes!
+  collateral: Bytes!
+  expiryTime: BigInt!
+  windowSize: BigInt!
+  strikePrice: BigInt!
+}
+
+type Option @entity {
+  id: ID!
+}
+
+type Obligation @entity {
+  id: ID!
+}
+
+type Writer @entity {
+  id: ID!
+  totalSatoshis: BigInt!
 }
