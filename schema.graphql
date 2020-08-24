@@ -14,15 +14,24 @@ type OptionPair @entity {
   strikePrice: BigInt!
 }
 
-type Option @entity {
+type Account @entity {
   id: ID!
+  totalSatoshis: BigInt!
+  totalOptions: BigInt!
+  totalObligations: BigInt!
+  obligation: [Obligation!]! @derivedFrom(field: "writer")
 }
 
 type Obligation @entity {
   id: ID!
+  writer: Account!
+  obligation: Bytes!
+  balance: BigInt!
 }
 
-type Writer @entity {
+type Request @entity {
   id: ID!
-  totalSatoshis: BigInt!
+  buyer: Bytes!
+  seller: Bytes!
+  amount: BigInt!
 }

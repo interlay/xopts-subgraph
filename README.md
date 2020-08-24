@@ -13,10 +13,27 @@ yarn deploy-local
 
 ## Example Queries
 
-### Options After Expiry
+### Accounts
+
+Overview of an account's positions where `id` is the address.
 
 ```graphql
-query ActiveOptions($expiry: BigInt) {
+query {
+  accounts {
+    id
+    totalOptions
+    totalObligations
+    totalSatoshis
+  }
+}
+```
+
+### Active Options
+
+Return non-expired option pairs which are eligible to be written to or bought from.
+
+```graphql
+query ActiveOptions($expiry: BigInt!) {
   optionPairs(where: {expiryTime_gte: $expiry}) {
     option
     obligation
@@ -24,16 +41,46 @@ query ActiveOptions($expiry: BigInt) {
 }
 ```
 
-> For the total count we will need to aggregate on the front-end.
+> It is the consumer's responsibility to aggregate the total market count.
 
-### Total Satoshis Transferred
+### Satoshis Transferred
+
+Compute the total number of satoshis transacted through the platform.
 
 ```graphql
-query SatoshisTransferred($id: ID!) {
-  optionPairFactory(id: $id) {
+query {
+  optionPairFactories {
+    id
     totalSatoshis
   }
 }
 ```
 
-> A similar query can be used for calculating the total number per writer.
+### User Exercise Requests
+
+Return all active requests for an account (i.e. those pending BTC proofs).
+
+```graphql
+query Requests($addr: Bytes!) {
+  requests(where: {buyer: $addr}) {
+    id
+    seller
+    amount
+  }
+}
+```
+
+### Obligation Writers
+
+Return all writers for a particular obligation contract, useful for determining who to exercise against.
+
+```graphql
+query ObligationWriters($addr: Bytes!)  {
+  positions(where: {obligation: $addr}) {
+    writer{
+      id
+    }
+    balance
+  }
+}
+```

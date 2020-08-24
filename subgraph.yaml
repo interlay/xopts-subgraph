@@ -8,7 +8,7 @@ dataSources:
     name: OptionPairFactory
     network: mainnet
     source:
-      address: '0xb002b81476Df40bfFccD24514515078A17646307'
+      address: '0x19a7A0B9b32b6DB1051bc43Cfc4b8f299129D0ef'
       abi: OptionPairFactory
     mapping:
       kind: ethereum/events
@@ -21,7 +21,7 @@ dataSources:
         - name: OptionPairFactory
           file: ./abis/OptionPairFactory.json
       eventHandlers:
-        - event: CreatePair(bytes32,address,address,address,uint256,uint256,uint256)
+        - event: CreatePair(address,address,address,uint256,uint256,uint256)
           handler: handleNewPair
 templates:
   - kind: ethereum/contract
@@ -39,6 +39,9 @@ templates:
       abis:
         - name: Option
           file: ./abis/Option.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
   - kind: ethereum/contract
     name: Obligation
     network: mainnet
@@ -51,10 +54,16 @@ templates:
       file: ./src/mapping.ts
       entities:
         - OptionPair
-        - Writer
+        - Account
+        - Obligation
+        - Request
       abis:
         - name: Obligation
           file: ./abis/Obligation.json
       eventHandlers:
+        - event: Write(indexed address,indexed address,uint256,bytes20,uint8)
+          handler: handleWrite
+        - event: RequestExercise(indexed address,indexed address,bytes32,uint256)
+          handler: handleRequest
         - event: ExecuteExercise(indexed address,indexed address,uint256,uint256)
           handler: handleExercise
